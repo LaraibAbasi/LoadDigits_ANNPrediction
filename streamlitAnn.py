@@ -1,6 +1,10 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import streamlit as st
+from PIL import Image  # Importing the Image module from PIL
+import numpy as np
+import tensorflow as tf
+
+# Load your trained model
+model = tf.keras.models.load_model('ann_model.h5')
 
 def preprocess_image(image):
     """Preprocess the image to match the input format of the model."""
