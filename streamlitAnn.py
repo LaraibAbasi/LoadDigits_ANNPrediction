@@ -4,7 +4,7 @@ import numpy as np
 import joblib
 
 # Load your trained model (Assuming it's a model trained on 8x8 images from load_digits)
-model = joblib.load('ann_model.h5')
+model = joblib.load('digits_model.pkl')
 
 def preprocess_image(image):
     """Preprocess the image to match the input format of the load_digits model."""
@@ -44,5 +44,11 @@ if uploaded_file is not None:
     # Make a prediction on the uploaded image
     prediction = predict(image)
     
+    # Find the predicted class (index of the highest probability)
+    predicted_class = np.argmax(prediction[0])
+    
     # Display the prediction result
-    st.write(f"Prediction: Digit {prediction[0]}")
+    st.write(f"Prediction: Digit {predicted_class}")
+    
+    # Optionally, display the full prediction array (if it's useful)
+    st.write("Full prediction:", prediction)
