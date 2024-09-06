@@ -1,23 +1,23 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-import joblib
+import tensorflow as tf
 
-# Load your trained model (Assuming it's a model trained on 8x8 images from load_digits)
-model = joblib.load('ANN_model.pkl')
+# Load your trained model
+model = tf.keras.models.load_model('ann_model.h5')
 
 def preprocess_image(image):
-    """Preprocess the image to match the input format of the load_digits model."""
+    """Preprocess the image to match the input format of the model."""
     # Convert the image to grayscale
     image = image.convert('L')
     
-    # Resize the image to 8x8 pixels (the size used in the load_digits dataset)
+    # Resize the image to 8x8 pixels
     image = image.resize((8, 8))
     
-    # Convert image to a numpy array and normalize pixel values to match the dataset's scale
+    # Convert image to a numpy array and normalize pixel values
     image = np.array(image)
-    image = np.interp(image, (0, 255), (0, 16))  # Scale pixels to 0-16 like the dataset
-
+    image = np.interp(image, (0, 255), (0, 1))  # Scale pixels to 0-1
+    
     # Flatten the image to a 1D array (64 features)
     image = image.flatten().reshape(1, -1)
     return image
@@ -50,5 +50,5 @@ if uploaded_file is not None:
     # Display the prediction result
     st.write(f"Prediction: Digit {predicted_class}")
     
-    # Optionally, display the full prediction array (if it's useful)
+    # Optionally, display the full prediction array
     st.write("Full prediction:", prediction)
