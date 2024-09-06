@@ -4,7 +4,7 @@ import numpy as np
 import joblib
 
 # Load your trained model (Assuming it's a model trained on 8x8 images from load_digits)
-model = joblib.load('digits_model.pkl')
+model = joblib.load('ANN_model.pkl')
 
 def preprocess_image(image):
     """Preprocess the image to match the input format of the load_digits model."""
