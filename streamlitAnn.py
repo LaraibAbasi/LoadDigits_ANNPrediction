@@ -1,35 +1,34 @@
 import streamlit as st
-from PIL import Image
 import numpy as np
-import tensorflow as tf
+from tensorflow.keras.models import load_model
+from PIL import Image
+import cv2
 
-# Load your trained model (Assuming it's a TensorFlow/Keras model)
-model = tf.keras.models.load_model('ann_model.h5')
+# Load the saved model
+ann= load_model('digits_ann.h5')
 
+# Function to preprocess the image
 def preprocess_image(image):
-    """Preprocess the image before passing it to the model."""
-    image = image.resize((64, 64))  # Adjust this size based on model input
-    image = np.array(image) / 255.0   # Normalize
-    image = image.flatten()  # Flatten for a model expecting 1D input
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
+    image = image.convert('L')  # Convert to grayscale
+    image = image.resize((8, 8))  # Resize to 8x8 pixels as in the dataset
+    image = np.array(image) / 16.0  # Normalize (as the dataset uses 16 grayscale values)
+    image = image.flatten().reshape(1, -1)  # Flatten and reshape
     return image
 
-def predict(image):
-    """Run the model prediction on the image."""
-    processed_image = preprocess_image(image)
-    prediction = model.predict(processed_image)
-    return prediction
+# Streamlit app interface
+st.title("Digit Recognition App")
 
-# Streamlit UI
-st.title("Image Classification App")
-
-uploaded_file = st.file_uploader("Upload an image...", type=["jpg", "png", "jpeg"])
+# Allow user to upload an image
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
 
 if uploaded_file is not None:
+    # Display the uploaded image
     image = Image.open(uploaded_file)
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-    st.write("Classifying...")
+    st.image(image, caption='Uploaded Image', use_column_width=True)
+    
+    # Preprocess and predict
+    processed_image = preprocess_image(image)
+    prediction = model.predict(processed_image)
+    predicted_digit = np.argmax(prediction)
 
-    # Run the model prediction
-    prediction = predict(image)
-    st.write(f"Prediction: {prediction}")
+    st.write(f'Predicted Digit: {predicted_digit}')
