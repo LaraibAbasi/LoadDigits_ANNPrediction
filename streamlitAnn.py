@@ -4,12 +4,13 @@ import numpy as np
 import tensorflow as tf
 
 # Load your trained model (Assuming it's a TensorFlow/Keras model)
-model = tf.keras.models.load_model('ann_model.h5') 
+model = tf.keras.models.load_model('ann_model.h5')
 
 def preprocess_image(image):
     """Preprocess the image before passing it to the model."""
-    image = image.resize((224, 224))  # Resizing the image
-    image = np.array(image) / 255.0   # Normalizing
+    image = image.resize((64, 64))  # Adjust this size based on model input
+    image = np.array(image) / 255.0   # Normalize
+    image = image.flatten()  # Flatten for a model expecting 1D input
     image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image
 
