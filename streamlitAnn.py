@@ -1,34 +1,34 @@
 import streamlit as st
-import numpy as np
-from tensorflow.keras.models import load_model
 from PIL import Image
-import cv2
+import numpy as np
+import tensorflow as tf
 
-# Load the saved model
-ann= load_model('digits_ann.h5')
+# Load your trained model (Assuming it's a TensorFlow/Keras model)
+model = tf.keras.models.load_model('ann_model.h5') 
 
-# Function to preprocess the image
 def preprocess_image(image):
-    image = image.convert('L')  # Convert to grayscale
-    image = image.resize((8, 8))  # Resize to 8x8 pixels as in the dataset
-    image = np.array(image) / 16.0  # Normalize (as the dataset uses 16 grayscale values)
-    image = image.flatten().reshape(1, -1)  # Flatten and reshape
+    """Preprocess the image before passing it to the model."""
+    image = image.resize((224, 224))  # Resizing the image
+    image = np.array(image) / 255.0   # Normalizing
+    image = np.expand_dims(image, axis=0)  # Add batch dimension
     return image
 
-# Streamlit app interface
-st.title("Digit Recognition App")
-
-# Allow user to upload an image
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
-
-if uploaded_file is not None:
-    # Display the uploaded image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
-    
-    # Preprocess and predict
+def predict(image):
+    """Run the model prediction on the image."""
     processed_image = preprocess_image(image)
     prediction = model.predict(processed_image)
-    predicted_digit = np.argmax(prediction)
+    return prediction
 
-    st.write(f'Predicted Digit: {predicted_digit}')
+# Streamlit UI
+st.title("Image Classification App")
+
+uploaded_file = st.file_uploader("Upload an image...", type=["jpg", "png", "jpeg"])
+
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.write("Classifying...")
+
+    # Run the model prediction
+    prediction = predict(image)
+    st.write(f"Prediction: {prediction}")
