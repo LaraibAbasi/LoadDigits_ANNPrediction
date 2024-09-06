@@ -1,5 +1,5 @@
 import streamlit as st
-from PIL import Image  # Importing the Image module from PIL
+from PIL import Image
 import numpy as np
 import tensorflow as tf
 
@@ -9,10 +9,10 @@ model = tf.keras.models.load_model('ann_model.h5')
 def preprocess_image(image):
     """Preprocess the image to match the input format of the model."""
     image = image.convert('L')  # Convert to grayscale
-    image = image.resize((8, 8))  # Resize to 8x8 pixels
+    image = image.resize((8, 8))  # Resize to 8x8 pixels (assuming model was trained on 8x8 images)
     image = np.array(image)
     image = np.interp(image, (0, 255), (0, 1))  # Normalize to 0-1
-    image = image.flatten().reshape(1, -1)  # Flatten to 1D array
+    image = image.flatten().reshape(1, -1)  # Flatten to 1D array and reshape for model input
     return image
 
 def predict(image):
@@ -33,10 +33,6 @@ if uploaded_file is not None:
     # Display the uploaded image
     st.image(image, caption="Uploaded Image", use_column_width=True)
     st.write("Classifying...")
-    
-    # Display the preprocessed image
-    preprocessed_image = preprocess_image(image)
-    st.image(np.reshape(preprocessed_image, (8, 8)), caption="Preprocessed Image", use_column_width=True)
     
     # Make a prediction on the uploaded image
     prediction = predict(image)
